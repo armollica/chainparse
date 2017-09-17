@@ -49,6 +49,60 @@ tape('A key and value can be a quoted string with spaces', function(test) {
     test.end();
 });
 
+tape('Specifying a different command prefix works', function(test) {
+    var argv = [
+        'node', 'program.js',
+        '--i', 'key=value',
+    ];
+    var options = {
+        commandPrefix: '--'
+    };
+    test.deepEqual(parse(argv, options), [
+        { command: 'i', _: [], key: 'value' }
+    ]);
+    test.end();
+});
+
+tape('Specifying a different key-value separator works', function(test) {
+    var argv = [
+        'node', 'program.js',
+        '-i', 'key:value',
+    ];
+    var options = {
+        keyValueSep: ':'
+    };
+    test.deepEqual(parse(argv, options), [
+        { command: 'i', _: [], key: 'value' }
+    ]);
+    test.end();
+});
+
+tape('Specifying a different command prefix and a different key-value separator works', function(test) {
+    var argv = [
+        'node', 'program.js',
+        '--i', 'key:value',
+    ];
+    var options = {
+        commandPrefix: '--',
+        keyValueSep: ':'
+    };
+    test.deepEqual(parse(argv, options), [
+        { command: 'i', _: [], key: 'value' }
+    ]);
+    test.end();
+});
+
+tape('Multiple singular string get added to the "_" array', function(test) {
+    var argv = [
+        'node', 'program.js',
+        '-filter', 'year > 1990', 'value < 100', 'key=value'
+    ];
+    test.deepEqual(parse(argv), [
+        { command: 'filter', _: ['year > 1990', 'value < 100'], key: 'value' }
+    ]);
+    test.end();
+});
+
 tape('A hypothetical mapshaper-like program works as expected', function(test) {
     var argv = [
         'node', 'program.js',

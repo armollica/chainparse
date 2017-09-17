@@ -9,7 +9,9 @@
   "keywords": [
     "argv",
     "getopt",
-    "parser"
+    "parser",
+    "chaining",
+    "cli"
   ],
   "author": {
     "name": "Andrew Mollica",
