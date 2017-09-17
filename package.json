@@ -1,0 +1,24 @@
+{
+  "name": "chainparse",
+  "version": "0.1.0",
+  "description": "A minimal parser for chain-style arguments",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js && eslint index.js"
+  },
+  "keywords": [
+    "argv",
+    "getopt",
+    "parser"
+  ],
+  "author": {
+    "name": "Andrew Mollica",
+    "email": "armollica@gmail.com",
+    "url": "https://github.com/armollica"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^4.7.0",
+    "tape": "^4.8.0"
+  }
+}
