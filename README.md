@@ -49,6 +49,7 @@ For example,
 //     -input input.csv format=csv \
 //     -filter 'year > 1995' 'value < 100' \
 //     -output output.tsv format=tsv
+
 process.argv == [
     ...,
     '-input', 'input.csv', 'format=csv',
