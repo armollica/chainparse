@@ -6,23 +6,25 @@ Install with `npm install chainparse`.
 
 ## Example
 
-```js
-// From command line...
-// node program.js \
-//     -i file1.csv name=census-data \
-//     -i file2.json name=counties format=geojson \
-//     -join left=counties right=census-data by=id name=joined \
-//     -o data.json format=geojson target=joined
+```bash
+# At command line or bash script...
 
-// In program.js...
+node program.js \
+    -i counties.json cities.json combine-files \
+    -dissolve state_fips name=states target=counties \
+    -o topo.json format=topojson
+```
+
+```js
+// program.js
+
 var commands = require('chainparse')(process.argv);
 
 // this is true
 commands == [
-    { command: 'i', _: ['file1.csv'], name: 'census-data' },
-    { command: 'i', _: ['file2.json'], name: 'counties', format: 'geojson' },
-    { command: 'join', _: [], left: 'counties', right: 'census-data', by: 'id', name: 'joined'},
-    { command: 'o', _: ['data.json'], format: 'geojson', target: 'joined' }
+    { command: 'i', _: ['counties.json', 'cities.json', 'combine-files']},
+    { command: 'dissolve', _: ['state_fips'], name: 'states', target: 'counties' },
+    { command: 'o', _: ['topo.json'], format: 'topojson' }
 ];
 ```
 
@@ -51,7 +53,7 @@ process.argv == [
     ...,
     '-input', 'input.csv', 'format=csv',
     '-filter', 'year > 1995', 'value < 100',
-    '-output', 'outpu.tsv', 'format=tsv',
+    '-output', 'output.tsv', 'format=tsv',
 ];  // true
 
 var parse = require('chainparse'),
