@@ -76,7 +76,9 @@ The second argument, *options*, is an object which lets you customize how argume
 ```js
 var options = {
     commandPrefix: '-',  // String that prefixes a command
-    keyValueSep: '='     // String that separates key-values options 
+    keyValueSep: '='     // String that separates key-values options
+    isKeyValue: function(command, key, value) { return true; }
+    isFlag: function(command, arg) { return true; }
 }
 ```
 

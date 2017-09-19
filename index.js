@@ -9,12 +9,13 @@ function parse(argv, options) {
         commandPrefix = '-',
         keyValueSep = '=';
 
-    if (options !== undefined) {
-       if (options.commandPrefix !== undefined) commandPrefix = options.commandPrefix;
-       if (options.keyValueSep !== undefined) keyValueSep = options.keyValueSep;
+    if (options) {
+       if (options.commandPrefix) commandPrefix = options.commandPrefix;
+       if (options.keyValueSep) keyValueSep = options.keyValueSep;
     }
 
     function isCommand(arg) { return arg.startsWith(commandPrefix); }
+
     function isKeyValue(arg) { return arg.indexOf(keyValueSep) > -1; }
 
     if (!isCommand(arg)) {
@@ -32,9 +33,19 @@ function parse(argv, options) {
             var d = arg.split(keyValueSep, 2),
                 key = d[0],
                 value = d[1];
-            command[key] = value;
+            if (options && options.isKeyValue) {
+                if (options.isKeyValue(command, key, value)) command[key] = value;
+                else command._.push(arg);
+            } else {
+                command[key] = value;
+            }
         } else {
-            command._.push(arg);
+            if (options && options.isFlag) {
+                if (options.isFlag(command, arg)) command[arg] = true;
+                else command._.push(arg);
+            } else {
+                command._.push(arg);
+            }
         }
     }
     return commands;

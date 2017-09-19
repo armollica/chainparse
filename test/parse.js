@@ -119,3 +119,41 @@ tape('A hypothetical mapshaper-like program works as expected', function(test) {
     ]);
     test.end();
 });
+
+tape('You can prevent a key-value from being added using the isKeyValue option', function(test) {
+    var argv = [
+        'node', 'program.js',
+        '-filter', 'value =< 100',
+        '-select', 'key,value'
+    ];
+    var options = {
+        isKeyValue: function(command, key, value) {
+            if (command.command === 'filter') return false;
+            return true;
+        }
+    };
+    test.deepEqual(parse(argv, options), [
+        { command: 'filter', _: ['value =< 100'] },
+        { command: 'select', _: ['key,value'] }
+    ]);
+    test.end();
+});
+
+tape('You can make an argument a flag using the isFlag option', function(test) {
+    var argv = [
+        'node', 'program.js',
+        '-input', 'file1.csv', 'format=csv', 'no-header',
+        '-select', 'key,value'
+    ];
+    var options = {
+        isFlag(command, arg) {
+            if (command.command === 'input' && arg === 'no-header') return true;
+            return false;
+        }
+    };
+    test.deepEqual(parse(argv, options), [
+        { command: 'input', _: ['file1.csv'], format: 'csv', 'no-header': true },
+        { command: 'select', _: ['key,value'] }
+    ]);
+    test.end();
+});
