@@ -1,159 +1,23 @@
-var tape = require('tape'),
-    parse = require('../');
+var tape = require('tape');
 
-tape('Create initial "_" command if first argument isn\'t a command', function(test) {
+tape('program.parse(...) is working', function(test) {
     var argv = [
-        'node', 'program.js',
-        'file1.json', 'name=counties', "format=geojson",
-        '-filter', 'fips.startsWith("55")',
-        '-o', 'good-counties.json', 'format=geojson'
+        '...', '...',
+        '-yell', 'volume=11', 'pitch=3.0', 'pop', 'chainparse is awesome!',
+        '-whisper', 'volume=1', 'pitch=8.2', 'muffle', 'actually, I\'m not so sure',
+        '-yell', 'volume=9', 'pitch=4.4', 'crackle', 'IT\'s THE BEST!!'
     ];
-    test.deepEqual(parse(argv), [
-        { command: '_', _: ['file1.json'], name: 'counties', format:'geojson' },
-        { command: 'filter', _: ['fips.startsWith("55")'] },
-        { command: 'o', _: ['good-counties.json'], format: 'geojson' }
-    ]);
-    test.end();
-});
 
-tape('A key can be a quoted string with spaces', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-i', 'spaced key=value', 'key=value',
-    ];
-    test.deepEqual(parse(argv), [
-        { command: 'i', _: [], 'spaced key': 'value', key: 'value' }
-    ]);
-    test.end();
-});
+    var program = require('../')
+        .command('yell', 'Say something loudly', { keys: ['volume', 'pitch'], flags: ['crackle', 'pop'] })
+        .command('whisper', 'Say something quietly', { keys: ['volume', 'pitch'], flags: ['muffle'] })
+        .parse(argv);
 
-tape('A value can be a quoted string with spaces', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-i', 'key=spaced value', 'key=value',
-    ];
-    test.deepEqual(parse(argv), [
-        { command: 'i', _: [], 'key': 'spaced value', key: 'value' }
+    test.deepEqual(program.commands, [
+        { commandName: 'yell', volume: '11', pitch: '3.0', pop: true, crackle: false, _: ['chainparse is awesome!'] },
+        { commandName: 'whisper', volume: '1', pitch: '8.2', muffle: true, _: ['actually, I\'m not so sure'] },
+        { commandName: 'yell', volume: '9', pitch: '4.4', pop: false, crackle: true, _: ['IT\'s THE BEST!!'] }
     ]);
-    test.end();
-});
 
-tape('A key and value can be a quoted string with spaces', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-i', 'spaced key=spaced value', 'key=value',
-    ];
-    test.deepEqual(parse(argv), [
-        { command: 'i', _: [], 'spaced key': 'spaced value', key: 'value' }
-    ]);
-    test.end();
-});
-
-tape('Specifying a different command prefix works', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '--i', 'key=value',
-    ];
-    var options = {
-        commandPrefix: '--'
-    };
-    test.deepEqual(parse(argv, options), [
-        { command: 'i', _: [], key: 'value' }
-    ]);
-    test.end();
-});
-
-tape('Specifying a different key-value separator works', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-i', 'key:value',
-    ];
-    var options = {
-        keyValueSep: ':'
-    };
-    test.deepEqual(parse(argv, options), [
-        { command: 'i', _: [], key: 'value' }
-    ]);
-    test.end();
-});
-
-tape('Specifying a different command prefix and a different key-value separator works', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '--i', 'key:value',
-    ];
-    var options = {
-        commandPrefix: '--',
-        keyValueSep: ':'
-    };
-    test.deepEqual(parse(argv, options), [
-        { command: 'i', _: [], key: 'value' }
-    ]);
-    test.end();
-});
-
-tape('Multiple singular string get added to the "_" array', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-filter', 'year > 1990', 'value < 100', 'key=value'
-    ];
-    test.deepEqual(parse(argv), [
-        { command: 'filter', _: ['year > 1990', 'value < 100'], key: 'value' }
-    ]);
-    test.end();
-});
-
-tape('A hypothetical mapshaper-like program works as expected', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-i', 'file1.csv', 'name=demographics',
-        '-i', 'file2.json', 'name=counties', 'format=geojson',
-        '-join', 'left=counties', 'right=demographics', 'by=id', 'name=joined',
-        '-o', 'data.json', 'format=geojson', 'target=joined'
-    ];
-    test.deepEqual(parse(argv), [
-        { command: 'i', _: ['file1.csv'], name: 'demographics' },
-        { command: 'i', _: ['file2.json'], name: 'counties', format: 'geojson' },
-        { command: 'join', _: [], left: 'counties', right: 'demographics', by: 'id', name: 'joined'},
-        { command: 'o', _: ['data.json'], format: 'geojson', target: 'joined' }
-    ]);
-    test.end();
-});
-
-tape('You can prevent a key-value from being added using the isKeyValue option', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-filter', 'value =< 100',
-        '-select', 'key,value'
-    ];
-    var options = {
-        isKeyValue: function(command, key, value) {
-            if (command.command === 'filter') return false;
-            return true;
-        }
-    };
-    test.deepEqual(parse(argv, options), [
-        { command: 'filter', _: ['value =< 100'] },
-        { command: 'select', _: ['key,value'] }
-    ]);
-    test.end();
-});
-
-tape('You can make an argument a flag using the isFlag option', function(test) {
-    var argv = [
-        'node', 'program.js',
-        '-input', 'file1.csv', 'format=csv', 'no-header',
-        '-select', 'key,value'
-    ];
-    var options = {
-        isFlag(command, arg) {
-            if (command.command === 'input' && arg === 'no-header') return true;
-            return false;
-        }
-    };
-    test.deepEqual(parse(argv, options), [
-        { command: 'input', _: ['file1.csv'], format: 'csv', 'no-header': true },
-        { command: 'select', _: ['key,value'] }
-    ]);
     test.end();
 });

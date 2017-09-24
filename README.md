@@ -30,6 +30,8 @@ commands == [
 
 ## API Reference
 
+Note that the reference below is out-of-date and doesn't reflect the current API. This will be updated once the API has stablized a bit more.
+
 This module is a single function that parses an array of arguments, most likely those passed from the command line and stored in `process.argv`.
 
 ```js
