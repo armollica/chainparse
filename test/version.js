@@ -1,7 +1,8 @@
-var tape = require('tape');
+var tape = require('tape'),
+    chainparse = require('../');
 
 tape('program.version(...) is working', function(test) {
-    var program = require('../')
+    var program = chainparse()
         .version('1.2.3');
 
     test.equal(program.version(), '1.2.3');

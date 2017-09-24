@@ -18,11 +18,17 @@ node program.js \
 ```js
 // program.js
 
-var commands = require('chainparse')(process.argv);
+var program = require('chainparse')
+
+program
+    .command('i', 'Input files', { flags: ['combine-files'] })
+    .command('dissolve', 'Dissolve borders', { keys: ['name', 'target'] })
+    .command('o', 'Output files', { keys: ['format'] })
+    .parse(process.argv);
 
 // this is true
 commands == [
-    { command: 'i', _: ['counties.json', 'cities.json', 'combine-files']},
+    { command: 'i', _: ['counties.json', 'cities.json'], 'combine-files': true },
     { command: 'dissolve', _: ['state_fips'], name: 'states', target: 'counties' },
     { command: 'o', _: ['topo.json'], format: 'topojson' }
 ];

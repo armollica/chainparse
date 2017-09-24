@@ -1,4 +1,5 @@
-var tape = require('tape');
+var tape = require('tape'),
+    chainparse = require('../');
 
 tape('program.parse(...) is working', function(test) {
     var argv = [
@@ -8,7 +9,7 @@ tape('program.parse(...) is working', function(test) {
         '-yell', 'volume=9', 'pitch=4.4', 'crackle', 'IT\'s THE BEST!!'
     ];
 
-    var program = require('../')
+    var program = chainparse()
         .command('yell', 'Say something loudly', { keys: ['volume', 'pitch'], flags: ['crackle', 'pop'] })
         .command('whisper', 'Say something quietly', { keys: ['volume', 'pitch'], flags: ['muffle'] })
         .parse(argv);

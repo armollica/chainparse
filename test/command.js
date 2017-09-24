@@ -1,7 +1,8 @@
-var tape = require('tape');
+var tape = require('tape'),
+    chainparse = require('../');
 
 tape('program.command(...) is working', function(test) {
-    var program = require('../');
+    var program = chainparse();
 
     test.throws(function() { program.command() }, 'Must specify both command\'s name and description.');
     test.throws(function() { program.command('boom') }, 'Must specify both command\'s name and description.');

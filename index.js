@@ -15,6 +15,28 @@ function version(__version__) {
     return this;
 }
 
+function keyValueSeparator(__keyValueSeparator__) {
+    if (__keyValueSeparator__ === undefined) return this.__keyValueSeparator__;
+    
+    var isString = typeof __keyValueSeparator__ === 'string';
+    if (!isString) throw new Error('Key-value separator must be a string');
+
+    this.__keyValueSeparator__ = __keyValueSeparator__;
+
+    return this;
+}
+
+function commandPrefix(__commandPrefix__) {
+    if (__commandPrefix__ === undefined) return this.__commandPrefix__;
+    
+    var isString = typeof __commandPrefix__ === 'string';
+    if (!isString) throw new Error('Command prefix must be a string');
+
+    this.__commandPrefix__ = __commandPrefix__;
+
+    return this;
+}
+
 function command(name, description, options) {
     if (arguments.length < 2) throw new Error('Must specify both command\'s name and description.');
     this.__commandSpec__[name] = {
@@ -92,14 +114,18 @@ function parse(argv) {
     }
 }
 
-var program = {
-    __keyValueSeparator__: '=',
-    __commandPrefix__: '-',
-    __commandSpec__: {},
-    version: version,
-    command: command,
-    commands: [],
-    parse: parse
-};
+function program() {
+    return {
+        __keyValueSeparator__: '=',
+        __commandPrefix__: '-',
+        __commandSpec__: {},
+        version: version,
+        keyValueSeparator: keyValueSeparator,
+        commandPrefix: commandPrefix,
+        command: command,
+        commands: [],
+        parse: parse
+    };
+}
 
 module.exports = program;
